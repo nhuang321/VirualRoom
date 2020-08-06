@@ -22,6 +22,10 @@ var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
+app.set('port', 5000);
+
+//app.use(express.static(__dirname + '/'));
+
 app.use('/static', express.static(__dirname + '/static'));
 
 app.use(bodyParser.urlencoded({ 
@@ -74,16 +78,16 @@ io.on('connection', function(socket) {
   });
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
-    if (data.left) {
+    if (data.left && player.x - 5 > 0) {
       player.x -= 5;
     }
-    if (data.up) {
+    if (data.up && player.y - 5 > 0) {
       player.y -= 5;
     }
-    if (data.right) {
+    if (data.right && player.x + 5 < 800) {
       player.x += 5;
     }
-    if (data.down) {
+    if (data.down && player.y + 5 < 600) {
       player.y += 5;
     }
   });
