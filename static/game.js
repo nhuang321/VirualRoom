@@ -1,5 +1,5 @@
 var socket = io();
-
+var radius = 80;
 var movement = {
   up: false,
   down: false,
@@ -60,6 +60,19 @@ socket.on('state', function(players) {
     }
 
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+    if (players.hasOwnProperty(socket.id)){
+      drawJoinBox(players, id);
+    }
     context.fill();
   }
 });
+
+function drawJoinBox(players, otherPlayerId){
+  if (socket.id == otherPlayerId){
+    return;
+  }
+  if (Math.sqrt(Math.pow(players[socket.id].x - players[otherPlayerId].x, 2) + 
+    Math.pow(players[otherPlayerId].y - players[socket.id].y, 2)) < radius){
+      console.log('player within range!')
+  }
+}
