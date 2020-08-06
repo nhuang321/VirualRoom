@@ -47,12 +47,18 @@ setInterval(function() {
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 socket.on('state', function(players) {
-  console.log(players);
   context.clearRect(0, 0, 800, 600);
-  context.fillStyle = 'green';
+  context.fillStyle = 'blue';
   for (var id in players) {
     var player = players[id];
     context.beginPath();
+
+    if ( socket.id == id ) {
+      context.fillStyle = 'green';
+    } else {
+      context.fillStyle = 'blue';
+    }
+
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
     context.fill();
   }
