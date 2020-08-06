@@ -1,20 +1,58 @@
 // Dependencies.
 var express = require('express');
+var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
+
+const mongoose = require('mongoose'); 
+mongoose.connect('mongodb://localhost:27017/db', { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true 
+}); 
+
+var db = mongoose.connection; 
+db.on('error', console.log.bind(console, "connection error")); 
+db.once('open', function(callback){ 
+    console.log("connection succeeded"); 
+}) 
+
 
 var app = express();
 var server = http.Server(app);
 var io = socketIO(server);
 
-app.set('port', 5000);
 app.use('/static', express.static(__dirname + '/static'));
 
+app.use(bodyParser.urlencoded({ 
+  extended: true,
+})); 
+
+
+
+
 // Routing
+
 app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
+
+app.post('/login', function(req,res) { 
+  var name = req.body.name; 
+  var webex = req.body.webex
+
+  var data = { 
+      "name": name, 
+      "webex": webex,
+  }
+
+  db.collection('users').insertOne(data, function(err, collection) { 
+        if (err) throw err; 
+        console.log("Record inserted Successfully");        
+    }); 
+        
+  return res.redirect('game.html'); 
+}) 
 
 app.get('/game', function(request, response) {
   response.sendFile(path.join(__dirname, 'game.html'));
@@ -23,6 +61,8 @@ app.get('/game', function(request, response) {
 server.listen(5000, function() {
   console.log('Starting server on port 5000');
 });
+
+
 
 var players = {};
 io.on('connection', function(socket) {
