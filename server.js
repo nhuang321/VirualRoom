@@ -6,7 +6,7 @@ var path = require('path');
 var socketIO = require('socket.io');
 
 const mongoose = require('mongoose'); 
-mongoose.connect('mongodb://localhost:27017/db', { 
+mongoose.connect('mongodb://localhost:27017/virtualRoom', { 
   useNewUrlParser: true,
   useUnifiedTopology: true 
 }); 
@@ -41,7 +41,7 @@ app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.post('/login', function(req,res) { 
+app.post('/login', async function(req,res) { 
   var name = req.body.name; 
   var webex = req.body.webex
 
@@ -49,13 +49,23 @@ app.post('/login', function(req,res) {
       "name": name, 
       "webex": webex,
   }
+  
+  try {
+    var found = await db.collection('users').findOne({ "webex": webex });
 
-  db.collection('users').insertOne(data, function(err, collection) { 
+    if (!found) {
+      db.collection('users').insertOne(data, function(err, collection) { 
         if (err) throw err; 
         console.log("Record inserted Successfully");        
-    }); 
-        
-  return res.redirect('game.html'); 
+      }); 
+    } 
+    return res.redirect('game'); 
+
+  } catch (e) {
+    console.log('error', e);
+    return res.send('Something went wrong :(')
+  }
+
 }) 
 
 app.get('/game', function(request, response) {
