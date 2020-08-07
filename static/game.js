@@ -102,13 +102,13 @@ socket.on('state', function(players) {
     context.fill();
     context.fillStyle = 'black'
     context.font = `${11}px serif`
-    context.fillText(OUN, player.x - 20, player.y + 20);
+    context.fillText(player.OUN, player.x - 20, player.y + 20);
   
     if (players.hasOwnProperty(socket.id)){
       determineCloseness(players, id);
     }
   }
-  drawJoinBox(players, closestPlayerInfo.id, OUN, context);
+  drawJoinBox(players, closestPlayerInfo.id, context);
 });
 
 function determineCloseness(players, otherPlayerId) {
@@ -123,7 +123,7 @@ function determineCloseness(players, otherPlayerId) {
   }
 }
 
-function drawJoinBox(players, closestId, OUN, context) {
+function drawJoinBox(players, closestId, context) {
   if ( closestId === -1 ) {
     return;
   }
@@ -133,7 +133,7 @@ function drawJoinBox(players, closestId, OUN, context) {
   context.arc(players[closestId].x, players[closestId].y, 10, 0, 2 * Math.PI);
   context.fill();
   drawBubble(context, players[closestId].x, players[closestId].y + 10, 100, 60, 25);
-  drawJoinButton(context, OUN, players[closestId].x + 13, players[closestId].y + 100-77, 70, 35);
+  drawJoinButton(context, players[closestId].x + 13, players[closestId].y + 100-77, 70, 35);
   currentAcceptBox.x = players[closestId].x + 13 + 11;
   currentAcceptBox.y = players[closestId].y + 100-77 + 10 + 3;
   currentAcceptBox.width = 70;
@@ -181,7 +181,7 @@ function drawRoundRect(ctx, x, y, width, height, rounded) {
   ctx.stroke(); 
 }
 
-function drawJoinButton(ctx, OUN, x, y, w, h) {
+function drawJoinButton(ctx, x, y, w, h) {
   ctx.fillStyle = 'green';
   drawRoundRect(ctx, x, y, w, h, 5);
   ctx.fillStyle = 'white'
