@@ -24,7 +24,6 @@ var io = socketIO(server);
 
 app.set('port', 5000);
 
-console.log(__dirname)
 app.use('/static', express.static(__dirname + '/../static'));
 
 app.use(bodyParser.urlencoded({ 
@@ -39,26 +38,25 @@ app.get('/', function(request, response) {
 });
 
 app.post('/login', async function(req,res) { 
-  var name = req.body.name; 
+  var OUN = req.body.OUN; 
   var webex = req.body.webex
 
   var data = { 
-      name: name, 
+      OUN: OUN, 
       webex: webex,
       socket_id: -1,
   }
   
   try {
-    var found = await db.collection('users').findOne({ "webex": webex });
-
+    var found = await db.collection('users').findOne({ "OUN": OUN });
+    console.log(found)
     if (!found) {
       db.collection('users').insertOne(data, function(err, collection) { 
         if (err) throw err; 
         console.log("Record inserted Successfully");        
       }); 
     } 
-    var string = encodeURIComponent(webex);
-    return res.redirect('game/?webex=' + string);
+    return res.redirect('game/?OUN=' + encodeURIComponent(OUN));
 
   } catch (e) {
     console.log('error', e);
@@ -79,10 +77,11 @@ server.listen(5000, function() {
 
 var players = {};
 io.on('connection', function(socket) {
-  socket.on('new player', async function(webex) {
+  socket.on('new player', async function(OUN) {
     try {
-      await db.collection('users').updateOne({ 'webex': webex }, { $set: { 'socket_id': socket.id }});
-
+      var ret = await db.collection('users').updateOne({ 'OUN': OUN }, { $set: { 'socket_id': socket.id }});
+      console.log('oun from emit', OUN)
+      console.log(await db.collection('users').findOne({ "OUN": OUN }));
       players[socket.id] = {
         x: 300,
         y: 300

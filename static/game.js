@@ -1,7 +1,7 @@
 var socket = io();
 var radius = 80;
 const urlParams = new URLSearchParams(window.location.search);
-const webex = urlParams.get('webex');
+const OUN = urlParams.get('OUN');
 var movement = {
   up: false,
   down: false,
@@ -53,7 +53,7 @@ const closestPlayerInfo = {
   id: -1,
 }
 
-socket.emit('new player', webex);
+socket.emit('new player', OUN);
 setInterval(function() {
   socket.emit('movement', movement);
 }, 1000 / 60);
