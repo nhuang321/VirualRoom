@@ -80,12 +80,21 @@ server.listen(5000, function() {
 var players = {};
 io.on('connection', function(socket) {
   socket.on('new player', async function(webex) {
-    await db.collection('users').updateOne({'webex': webex }, {$set: {'socket_id': socket.id}});
-    players[socket.id] = {
-      x: 300,
-      y: 300
-    };
+    console.log('new player')
+    try {
+      await db.collection('users').updateOne({ 'webex': webex }, { $set: { 'socket_id': socket.id }});
+
+      players[socket.id] = {
+        x: 300,
+        y: 300
+      };
+
+    } catch (e) {
+      console.log('error in new player creation', e)
+    }
   });
+    
+
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
     if (data.left && player.x - 5 > 0) {
@@ -101,10 +110,13 @@ io.on('connection', function(socket) {
       player.y += 5;
     }
   });
+
+  socket.on('disconnect', () => {
+    console.log('disconnected')
+  });
+
 });
 
 setInterval(function() {
   io.sockets.emit('state', players);
 }, 1000 / 60);
-
-
