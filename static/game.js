@@ -39,12 +39,20 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
+// {x: pos, y: pos}
+let globalDialoguePositions = [];
+
 socket.emit('new player');
 setInterval(function() {
   socket.emit('movement', movement);
 }, 1000 / 60);
 
 var canvas = document.getElementById('canvas');
+
+canvas.addEventListener('click', function(event) {
+  /* go through list of open dialogues. if event is within, fire */
+});
+
 var context = canvas.getContext('2d');
 socket.on('state', function(players) {
   context.clearRect(0, 0, 800, 600);
@@ -60,19 +68,54 @@ socket.on('state', function(players) {
     }
 
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
-    if (players.hasOwnProperty(socket.id)){
-      drawJoinBox(players, id);
-    }
     context.fill();
+    if (players.hasOwnProperty(socket.id)){
+      drawJoinBox(players, id, context);
+    }
   }
+  /* clear global list */
+  globalDialoguePositions = [];
 });
 
-function drawJoinBox(players, otherPlayerId){
+function drawJoinBox(players, otherPlayerId, context) {
   if (socket.id == otherPlayerId){
     return;
   }
   if (Math.sqrt(Math.pow(players[socket.id].x - players[otherPlayerId].x, 2) + 
-    Math.pow(players[otherPlayerId].y - players[socket.id].y, 2)) < radius){
-      console.log('player within range!')
+    Math.pow(players[otherPlayerId].y - players[socket.id].y, 2)) < radius) {
+      /* draw dialogue box
+       * add upper left of that join button to global thing
+      */
+     drawBubble(context, players[otherPlayerId].x, players[otherPlayerId].y + 10, 100, 100, 25);
+     drawJoinButton(context, players[otherPlayerId].x + 5, players[otherPlayerId].y + 100-20, 40, 20);
+
   }
+}
+
+function drawBubble(ctx, x, y, w, h, radius) {
+  var r = x + w;
+  var b = y + h;
+  ctx.beginPath();
+  ctx.strokeStyle="black";
+  ctx.lineWidth="2";
+  ctx.moveTo(x+radius, y);
+  ctx.lineTo(x+radius/2, y-10);
+  ctx.lineTo(x+radius * 2, y);
+  ctx.lineTo(r-radius, y);
+  ctx.quadraticCurveTo(r, y, r, y+radius);
+  ctx.lineTo(r, y+h-radius);
+  ctx.quadraticCurveTo(r, b, r-radius, b);
+  ctx.lineTo(x+radius, b);
+  ctx.quadraticCurveTo(x, b, x, b-radius);
+  ctx.lineTo(x, y+radius);
+  ctx.quadraticCurveTo(x, y, x+radius, y);
+  ctx.stroke();
+}
+
+function drawJoinButton(ctx, x, y, w, h) {
+  ctx.fillStyle = 'green';
+  ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = 'white'
+  ctx.font = `${h*.90}px serif`
+  ctx.fillText("JOIN", x, y + .75*h);
 }
