@@ -67,10 +67,13 @@ canvas.addEventListener('click', function(event) {
   if ( 0 < x - currentAcceptBox.x &&  x - currentAcceptBox.x < currentAcceptBox.width &&
        0 < y - currentAcceptBox.y && y- currentAcceptBox.y < currentAcceptBox.height) 
   {
-    socket.emit('getOUN', closestPlayerInfo.id);
-    socket.on('foundOUN', function(OUN) {
-      window.open("https://llnl.webex.com/join/" + OUN, '_blank');
-    })
+
+
+    fetch('http://localhost:5000/oun?socketId=' + closestPlayerInfo.id)
+    .then(response => response.json())
+    .then(data => window.open("https://llnl.webex.com/join/" + data.OUN, '_blank'))
+    .catch(error => { console.log('error from fetch', error)});
+
   }
 });
 

@@ -71,14 +71,14 @@ server.listen(5000, function() {
 });
 
 
-app.get('/oun', async function(request, response) {
+app.get('/oun', async function(req, res) {
   try {
-    var socketId = request.body.socketId
+    var socketId = req.query.socketId
     var found = await db.collection('users').findOne({ "socket_id": socketId})
     if (found) {
-      res.send(found.OUN)
+      res.send({'OUN': found.OUN})
     } else {
-      res.send('not found')
+      res.send({'OUN': 'NOT FOUND'})
     }
   } catch (e) {
     res.send('error: ', e)
@@ -92,11 +92,6 @@ app.get('/oun', async function(request, response) {
 
 var players = {};
 io.on('connection', function(socket) {
-
-  socket.on('getOUN', async function(id){
-    var webexPerson = await db.collection('users').findOne({ "socket_id": id})
-    socket.emit('foundOUN', webexPerson.OUN);
-  });
 
   socket.on('new player', async function(OUN) {
     try {
