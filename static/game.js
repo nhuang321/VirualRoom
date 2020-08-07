@@ -2,6 +2,16 @@ var socket = io();
 var radius = 80;
 const urlParams = new URLSearchParams(window.location.search);
 const webex = urlParams.get('webex');
+const currentAcceptBox = {
+  x: -1,
+  y: -1,
+  width: -1,
+  height: -1
+}
+const closestPlayerInfo = {
+  distance: Number.MAX_SAFE_INTEGER,
+  id: -1,
+}
 var movement = {
   up: false,
   down: false,
@@ -41,17 +51,6 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-const currentAcceptBox = {
-  x: -1,
-  y: -1,
-  width: -1,
-  height: -1
-}
-
-const closestPlayerInfo = {
-  distance: Number.MAX_SAFE_INTEGER,
-  id: -1,
-}
 
 socket.emit('new player', webex);
 setInterval(function() {
@@ -66,7 +65,10 @@ canvas.addEventListener('click', function(event) {
   if ( Math.abs(event.clientX - currentAcceptBox.x) < currentAcceptBox.width &&
        Math.abs(event.clientY - currentAcceptBox.y) < currentAcceptBox.height) 
   {
-    console.log('entered')
+    socket.emit('getWebex', closestPlayerInfo.id);
+    socket.on('foundWebex', function(webex){
+      window.open(webex, '_blank');
+    })
   }
 });
 
