@@ -64,13 +64,22 @@ canvas.addEventListener('click', function(event) {
   //fix because margin jazz
   const x = event.clientX - canvas.getBoundingClientRect().left - 5;
   const y = event.clientY - canvas.getBoundingClientRect().top - 5
+
+  var OUN;
+
   if ( 0 < x - currentAcceptBox.x &&  x - currentAcceptBox.x < currentAcceptBox.width &&
        0 < y - currentAcceptBox.y && y- currentAcceptBox.y < currentAcceptBox.height) 
   {
-    socket.emit('getOUN', closestPlayerInfo.id);
-    socket.on('foundOUN', function(OUN) {
-      window.open("https://llnl.webex.com/join/" + OUN, '_blank');
+
+
+    fetch('http://localhost:5000/oun?socketId=' + closestPlayerInfo.id)
+    .then(response => response.json())
+    .then(data => {
+      OUN = data.OUN
+      window.open("https://llnl.webex.com/join/" + data.OUN, '_blank')
     })
+    .catch(error => { console.log('error from fetch', error)});
+
   }
 });
 
@@ -91,11 +100,15 @@ socket.on('state', function(players) {
 
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
     context.fill();
+    context.fillStyle = 'black'
+    context.font = `${11}px serif`
+    context.fillText(OUN, player.x - 20, player.y + 20);
+  
     if (players.hasOwnProperty(socket.id)){
       determineCloseness(players, id);
     }
   }
-  drawJoinBox(players, closestPlayerInfo.id, context);
+  drawJoinBox(players, closestPlayerInfo.id, OUN, context);
 });
 
 function determineCloseness(players, otherPlayerId) {
@@ -110,10 +123,11 @@ function determineCloseness(players, otherPlayerId) {
   }
 }
 
-function drawJoinBox(players, closestId, context) {
+function drawJoinBox(players, closestId, OUN, context) {
   if ( closestId === -1 ) {
     return;
   }
+
   context.beginPath();
   context.fillStyle = `rgb(0, 0, 180)`
   context.arc(players[closestId].x, players[closestId].y, 10, 0, 2 * Math.PI);
@@ -171,8 +185,8 @@ function drawJoinButton(ctx, OUN, x, y, w, h) {
   ctx.fillStyle = 'green';
   drawRoundRect(ctx, x, y, w, h, 5);
   ctx.fillStyle = 'black'
-  ctx.font = `${h*.5}px serif`
-  ctx.fillText("JOIN " + OUN, x + 2, y + .75*h);
+  ctx.font = `${h*.85}px serif`
+  ctx.fillText("JOIN" + OUN, x + 2, y + .75*h);
 }
 
 function resetGlobals() {
