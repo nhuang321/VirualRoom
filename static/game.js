@@ -1,4 +1,5 @@
 var socket = io();
+socket.emit('new player', );
 
 var movement = {
   up: false,
@@ -39,7 +40,7 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-socket.emit('new player');
+
 setInterval(function() {
   socket.emit('movement', movement);
 }, 1000 / 60);
@@ -47,6 +48,7 @@ setInterval(function() {
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 socket.on('state', function(players) {
+  console.log('socket.id=', socket.id)
   context.clearRect(0, 0, 800, 600);
   context.fillStyle = 'blue';
   for (var id in players) {

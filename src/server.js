@@ -77,11 +77,23 @@ server.listen(5000, function() {
 
 var players = {};
 io.on('connection', function(socket) {
-  socket.on('new player', function() {
-    players[socket.id] = {
-      x: 300,
-      y: 300
-    };
+  socket.on('new player', async function() {
+
+    try {
+      var found = await db.collection('users').findOne({ "webex": webexURL });
+
+      if (!found) {
+
+        players[socket.id] = {
+          x: 300,
+          y: 300
+        };
+      }
+    } catch (e) {
+      print('error in new player creation', e)
+    }
+
+    
   });
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
