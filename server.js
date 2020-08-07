@@ -43,12 +43,14 @@ app.get('/', function(request, response) {
 
 app.post('/login', async function(req,res) { 
   var name = req.body.name; 
-  var webex = req.body.webex
+  var webex = req.body.webex;
+  var room = req.body.room ? req.body.room : 'public';
 
   var data = { 
       name: name, 
       webex: webex,
       socket_id: -1,
+      room: room
   }
   
   try {
@@ -87,10 +89,17 @@ io.on('connection', function(socket) {
 
   socket.on('new player', async function(webex) {
     await db.collection('users').updateOne({'webex': webex }, {$set: {'socket_id': socket.id}});
-    players[socket.id] = {
+    var user = await db.collection('users').findOne({ "webex": webex })
+    var room = user.room;
+    console.log('user', user);
+    if (!players.hasOwnProperty(room)){
+      players[room] = {};
+    }
+    players[room][socket.id] = {
       x: 300,
       y: 300
     };
+    socket.join(room);
   });
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
@@ -110,7 +119,9 @@ io.on('connection', function(socket) {
 });
 
 setInterval(function() {
-  io.sockets.emit('state', players);
+  for (room in Object.keys(players)){
+    io.to(room).emit('state', players[room]);
+  }
 }, 1000 / 60);
 
 
