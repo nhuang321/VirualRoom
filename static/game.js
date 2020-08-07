@@ -100,6 +100,10 @@ socket.on('state', function(players) {
 
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
     context.fill();
+    context.fillStyle = 'black'
+    context.font = `${11}px serif`
+    context.fillText(OUN, player.x - 20, player.y + 20);
+  
     if (players.hasOwnProperty(socket.id)){
       determineCloseness(players, id);
     }
