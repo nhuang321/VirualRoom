@@ -4,7 +4,8 @@
   "description": "A tutorial for creating multiplayer browser games",
   "main": "server.js",
   "scripts": {
-    "test": "node server.js"
+    "test": "node server.js",
+    "dev": "./node_modules/nodemon/bin/nodemon.js src/server.js"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,8 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.27",
     "socket.io": "^1.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
   }
 }

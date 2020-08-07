@@ -24,21 +24,18 @@ var io = socketIO(server);
 
 app.set('port', 5000);
 
-//app.use(express.static(__dirname + '/'));
-
-app.use('/static', express.static(__dirname + '/static'));
+console.log(__dirname)
+app.use('/static', express.static(__dirname + '/../static'));
 
 app.use(bodyParser.urlencoded({ 
   extended: true,
 })); 
 
 
-
-
 // Routing
 
 app.get('/', function(request, response) {
-  response.sendFile(path.join(__dirname, 'index.html'));
+  response.sendFile(path.join(__dirname, '/../static/index.html'));
 });
 
 app.post('/login', async function(req,res) { 
@@ -69,7 +66,7 @@ app.post('/login', async function(req,res) {
 }) 
 
 app.get('/game', function(request, response) {
-  response.sendFile(path.join(__dirname, 'game.html'));
+  response.sendFile(path.join(__dirname, '/../game.html'));
 });
 
 server.listen(5000, function() {
