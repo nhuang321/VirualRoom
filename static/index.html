@@ -10,9 +10,21 @@
         form {
           text-align: center;
         }
-        input:active {
-          outline: none;
-
+        input { 
+          display: block;
+          margin: 0px auto 20px auto;
+        }
+        button {
+          border: none;
+          background-color: rgb(194, 194, 194);
+          font-size: 20px;
+          padding: 10px 15px 10px 15px;
+          transition-duration: 0.4s;
+        }
+        button:hover {
+          background-color: #555555;
+          color: white;
+          cursor: pointer;
         }
       </style>
     </div>
@@ -20,13 +32,11 @@
   </head>
   <body>
     <h2>Welcome to this Virtual Room!</h2>
-    <form action="/login" method="POST" id="login">
+    <form action="/login" method="POST">
       <!-- input field for name --> 
-      <input type="text" id="username" name="name" placeholder="Enter name" required>
-      <br><br>
+      <input type="text" id="username" name="name" placeholder="Enter your name" required>
       <!-- input field for webex link -->
-      <input type="text" id="webexlink" name="webex" placeholder="Webex link" required>
-      <br><br>
+      <input type="text" id="webexlink" name="webex" placeholder="Enter your Webex link" required>
       <!-- submit information button -->
       <button type="submit">Submit</button>
     </form>
