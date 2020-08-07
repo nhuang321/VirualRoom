@@ -75,10 +75,13 @@ server.listen(5000, function() {
   console.log('Starting server on port 5000');
 });
 
-
-
 var players = {};
 io.on('connection', function(socket) {
+  socket.on('getWebex', async function(id){
+    var webexPerson = await db.collection('users').findOne({ "socket_id": id})
+    socket.emit('foundWebex', webexPerson.webex);
+  });
+
   socket.on('new player', async function(webex) {
     try {
       await db.collection('users').updateOne({ 'webex': webex }, { $set: { 'socket_id': socket.id }});
