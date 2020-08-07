@@ -39,8 +39,17 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-// {x: pos, y: pos}
-let globalDialoguePositions = [];
+const currentAcceptBox = {
+  x: -1,
+  y: -1,
+  width: -1,
+  height: -1
+}
+
+const closestPlayerInfo = {
+  distance: Number.MAX_SAFE_INTEGER,
+  id: -1,
+}
 
 socket.emit('new player');
 setInterval(function() {
@@ -50,12 +59,19 @@ setInterval(function() {
 var canvas = document.getElementById('canvas');
 
 canvas.addEventListener('click', function(event) {
-  /* go through list of open dialogues. if event is within, fire */
+  /* if event is within closest dialogue box bounds, fire */
+  //fix because margin jazz
+  if ( Math.abs(event.clientX - currentAcceptBox.x) < currentAcceptBox.width &&
+       Math.abs(event.clientY - currentAcceptBox.y) < currentAcceptBox.height) 
+  {
+    console.log('entered')
+  }
 });
 
 var context = canvas.getContext('2d');
 socket.on('state', function(players) {
   context.clearRect(0, 0, 800, 600);
+  resetGlobals();
   context.fillStyle = 'blue';
   for (var id in players) {
     var player = players[id];
@@ -70,26 +86,34 @@ socket.on('state', function(players) {
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
     context.fill();
     if (players.hasOwnProperty(socket.id)){
-      drawJoinBox(players, id, context);
+      determineCloseness(players, id);
     }
   }
-  /* clear global list */
-  globalDialoguePositions = [];
+  drawJoinBox(players, closestPlayerInfo.id, context);
 });
 
-function drawJoinBox(players, otherPlayerId, context) {
+function determineCloseness(players, otherPlayerId) {
   if (socket.id == otherPlayerId){
     return;
   }
-  if (Math.sqrt(Math.pow(players[socket.id].x - players[otherPlayerId].x, 2) + 
-    Math.pow(players[otherPlayerId].y - players[socket.id].y, 2)) < radius) {
-      /* draw dialogue box
-       * add upper left of that join button to global thing
-      */
-     drawBubble(context, players[otherPlayerId].x, players[otherPlayerId].y + 10, 100, 100, 25);
-     drawJoinButton(context, players[otherPlayerId].x + 5, players[otherPlayerId].y + 100-20, 40, 20);
-
+  const distance = Math.sqrt(Math.pow(players[socket.id].x - players[otherPlayerId].x, 2) + 
+  Math.pow(players[otherPlayerId].y - players[socket.id].y, 2));
+  if ( distance < closestPlayerInfo.distance ) {
+    closestPlayerInfo.distance = distance;
+    closestPlayerInfo.id = otherPlayerId;
   }
+}
+
+function drawJoinBox(players, closestId, context) {
+  if ( closestId === -1 ) {
+    return;
+  }
+  drawBubble(context, players[closestId].x, players[closestId].y + 10, 100, 100, 25);
+  drawJoinButton(context, players[closestId].x + 5, players[closestId].y + 100-20, 40, 20);
+  currentAcceptBox.x = players[closestId].x + 5;
+  currentAcceptBox.y = players[closestId].y + 100-20
+  currentAcceptBox.width = 40;
+  currentAcceptBox.height = 20;
 }
 
 function drawBubble(ctx, x, y, w, h, radius) {
@@ -119,3 +143,10 @@ function drawJoinButton(ctx, x, y, w, h) {
   ctx.font = `${h*.90}px serif`
   ctx.fillText("JOIN", x, y + .75*h);
 }
+
+function resetGlobals() {
+  closestPlayerInfo.distance = radius;
+  closestPlayerInfo.id = -1;
+  currentAcceptBox.width = -1;
+  currentAcceptBox.height = -1;
+} 
