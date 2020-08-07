@@ -46,8 +46,9 @@ app.post('/login', async function(req,res) {
   var webex = req.body.webex
 
   var data = { 
-      "name": name, 
-      "webex": webex,
+      name: name, 
+      webex: webex,
+      socket_id: -1,
   }
   
   try {
@@ -59,7 +60,8 @@ app.post('/login', async function(req,res) {
         console.log("Record inserted Successfully");        
       }); 
     } 
-    return res.redirect('game'); 
+    var string = encodeURIComponent(webex);
+    return res.redirect('game/?webex=' + string);
 
   } catch (e) {
     console.log('error', e);
@@ -80,7 +82,8 @@ server.listen(5000, function() {
 
 var players = {};
 io.on('connection', function(socket) {
-  socket.on('new player', function() {
+  socket.on('new player', async function(webex) {
+    await db.collection('users').updateOne({'webex': webex }, {$set: {'socket_id': socket.id}});
     players[socket.id] = {
       x: 300,
       y: 300
