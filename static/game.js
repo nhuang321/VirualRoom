@@ -67,20 +67,6 @@ canvas.addEventListener('click', function(event) {
   if ( 0 < x - currentAcceptBox.x &&  x - currentAcceptBox.x < currentAcceptBox.width &&
        0 < y - currentAcceptBox.y && y- currentAcceptBox.y < currentAcceptBox.height) 
   {
-    console.log('CLICKED')
-    // window.open("https://llnl.webex.com/join/" + OUN, '_blank');
-    // var data = { 'socketId': closestPlayerInfo.id}
-    // console.log(data);
-    // fetch('localhost:5000/oun')
-    // .then(data => {
-    //   console.log('data=', data)
-    //   return data.json()
-    // })
-    // .then(res => { 
-    //   console.log('res=', res)
-    // })
-    // .catch(error => { console.log('error from fetch', error)})
-
     socket.emit('getOUN', closestPlayerInfo.id);
     socket.on('foundOUN', function(OUN) {
       window.open("https://llnl.webex.com/join/" + OUN, '_blank');
