@@ -1,28 +1,22 @@
 <html>
   <head>
     <title>A Multiplayer Game</title>
-    <div>
-      <style>
-        canvas {
-          border: 5px solid black;
-        }
-      </style>
-    </div>
     <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/game.css">
   </head>
   <body>
-    Welcome to this Virtual Room!
-    <form action="/login" method="POST" id="login">
-      <!-- input field for name --> 
-      <label for="username">Enter your name here:</label>
-      <input type="text" id="username" name="name"required>
-      <br><br>
-      <!-- input field for webex link -->
-      <label for="webexlink">Enter your webex link here:</label>
-      <input type="text" id="webexlink" name="webex" required>
-      <br><br>
-      <!-- submit information button -->
-      <button type="submit">Submit</button>
-    </form>
+    <div class="main-body">
+      <h1>Welcome to Virtual Room!</h1>
+      <form action="/login" method="POST" id="login">
+        <!-- input field for name --> 
+        <input type="text" id="username" name="name" required placeholder="Name">
+        <br><br>
+        <!-- input field for webex link -->
+        <input type="text" id="webexlink" name="webex" required placeholder="Webex Link" >
+        <br><br>
+        <!-- submit information button -->
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   </body>
 </html>

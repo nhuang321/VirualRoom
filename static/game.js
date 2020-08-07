@@ -12,6 +12,7 @@ const closestPlayerInfo = {
   distance: Number.MAX_SAFE_INTEGER,
   id: -1,
 }
+
 var movement = {
   up: false,
   down: false,
@@ -62,10 +63,12 @@ var canvas = document.getElementById('canvas');
 canvas.addEventListener('click', function(event) {
   /* if event is within closest dialogue box bounds, fire */
   //fix because margin jazz
-  if ( 0 < event.clientX - currentAcceptBox.x &&  event.clientX - currentAcceptBox.x < currentAcceptBox.width &&
-       0 < event.clientY - currentAcceptBox.y && event.clientY - currentAcceptBox.y < currentAcceptBox.height) 
+  const x = event.clientX - canvas.getBoundingClientRect().left - 5;
+  const y = event.clientY - canvas.getBoundingClientRect().top - 5
+  if ( 0 < x - currentAcceptBox.x &&  x - currentAcceptBox.x < currentAcceptBox.width &&
+       0 < y - currentAcceptBox.y && y- currentAcceptBox.y < currentAcceptBox.height) 
   {
-    socket.emit('getWebex', closestPlayerInfo.id);
+    socket.emit('getWebex', closestPlayerInfo.id);ad
     socket.on('foundWebex', function(webex){
       window.open(webex, '_blank');
     })
@@ -118,8 +121,8 @@ function drawJoinBox(players, closestId, context) {
   context.fill();
   drawBubble(context, players[closestId].x, players[closestId].y + 10, 100, 60, 25);
   drawJoinButton(context, players[closestId].x + 13, players[closestId].y + 100-77, 70, 35);
-  currentAcceptBox.x = players[closestId].x + 13 + 11;
-  currentAcceptBox.y = players[closestId].y + 100-77 + 10 + 3;
+  currentAcceptBox.x = players[closestId].x + 13;
+  currentAcceptBox.y = players[closestId].y + 100-77;
   currentAcceptBox.width = 70;
   currentAcceptBox.height = 35;
 }

@@ -1,3 +1,27 @@
 canvas {
     border: 5px solid black;
 }
+.main-body {
+    margin-top: 100px;
+}
+body {
+    text-align: center;
+}
+h1, form {
+    display: block;
+}
+h1 {
+    font-size: 50px;
+}
+input {
+    font-size: 30px;
+}
+button {
+    background-color: rgb(220, 220, 220);
+    margin-top: 25px;
+    font-size: 30px;
+    border: none;
+    text-align: center;
+    padding: 20px;
+    border-radius: 16px;
+}
