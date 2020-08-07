@@ -62,8 +62,10 @@ var canvas = document.getElementById('canvas');
 canvas.addEventListener('click', function(event) {
   /* if event is within closest dialogue box bounds, fire */
   //fix because margin jazz
-  if ( 0 < event.clientX - currentAcceptBox.x &&  event.clientX - currentAcceptBox.x < currentAcceptBox.width &&
-       0 < event.clientY - currentAcceptBox.y && event.clientY - currentAcceptBox.y < currentAcceptBox.height) 
+  const x = event.clientX - canvas.getBoundingClientRect().left - 5;
+  const y = event.clientY - canvas.getBoundingClientRect().top - 5
+  if ( 0 < x - currentAcceptBox.x &&  x - currentAcceptBox.x < currentAcceptBox.width &&
+       0 < y - currentAcceptBox.y && y- currentAcceptBox.y < currentAcceptBox.height) 
   {
     console.log('CLICKED')
     var data = { 'socketId': closestPlayerInfo.id}
