@@ -119,7 +119,7 @@ function drawJoinBox(players, closestId, context) {
   context.arc(players[closestId].x, players[closestId].y, 10, 0, 2 * Math.PI);
   context.fill();
   drawBubble(context, players[closestId].x, players[closestId].y + 10, 100, 60, 25);
-  drawJoinButton(context, players[closestId].x + 13, players[closestId].y + 100-77, 70, 35);
+  drawJoinButton(context, OUN, players[closestId].x + 13, players[closestId].y + 100-77, 70, 35);
   currentAcceptBox.x = players[closestId].x + 13 + 11;
   currentAcceptBox.y = players[closestId].y + 100-77 + 10 + 3;
   currentAcceptBox.width = 70;
@@ -167,12 +167,12 @@ function drawRoundRect(ctx, x, y, width, height, rounded) {
   ctx.stroke(); 
 }
 
-function drawJoinButton(ctx, x, y, w, h) {
+function drawJoinButton(ctx, OUN, x, y, w, h) {
   ctx.fillStyle = 'green';
   drawRoundRect(ctx, x, y, w, h, 5);
-  ctx.fillStyle = 'white'
-  ctx.font = `${h*.85}px serif`
-  ctx.fillText("JOIN", x + 2, y + .75*h);
+  ctx.fillStyle = 'black'
+  ctx.font = `${h*.5}px serif`
+  ctx.fillText("JOIN " + OUN, x + 2, y + .75*h);
 }
 
 function resetGlobals() {
