@@ -43,8 +43,9 @@ app.post('/login', async function(req,res) {
   var webex = req.body.webex
 
   var data = { 
-      "name": name, 
-      "webex": webex,
+      name: name, 
+      webex: webex,
+      socket_id: -1,
   }
   
   try {
@@ -56,7 +57,8 @@ app.post('/login', async function(req,res) {
         console.log("Record inserted Successfully");        
       }); 
     } 
-    return res.redirect('game'); 
+    var string = encodeURIComponent(webex);
+    return res.redirect('game/?webex=' + string);
 
   } catch (e) {
     console.log('error', e);
@@ -77,23 +79,12 @@ server.listen(5000, function() {
 
 var players = {};
 io.on('connection', function(socket) {
-  socket.on('new player', async function() {
-
-    try {
-      var found = await db.collection('users').findOne({ "webex": webexURL });
-
-      if (!found) {
-
-        players[socket.id] = {
-          x: 300,
-          y: 300
-        };
-      }
-    } catch (e) {
-      print('error in new player creation', e)
-    }
-
-    
+  socket.on('new player', async function(webex) {
+    await db.collection('users').updateOne({'webex': webex }, {$set: {'socket_id': socket.id}});
+    players[socket.id] = {
+      x: 300,
+      y: 300
+    };
   });
   socket.on('movement', function(data) {
     var player = players[socket.id] || {};
