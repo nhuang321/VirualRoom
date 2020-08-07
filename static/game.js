@@ -67,6 +67,7 @@ canvas.addEventListener('click', function(event) {
   {
     socket.emit('getWebex', closestPlayerInfo.id);
     socket.on('foundWebex', function(webex){
+      console.log('here');
       window.open(webex, '_blank');
     })
   }
