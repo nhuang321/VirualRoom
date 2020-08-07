@@ -1,7 +1,7 @@
 h2 {
     text-align: center;
     margin: 20px 0px 50px 0px;
-    font-size: 50px;
+    font-size: 40px;
   }
   form {
     text-align: center;
@@ -9,12 +9,12 @@ h2 {
   input { 
     display: block;
     margin: 0px auto 20px auto;
-    font-size: 30px;
+    font-size: 20px;
   }
   button {
     background-color: rgb(220, 220, 220);
     margin-top: 25px;
-    font-size: 30px;
+    font-size: 20px;
     border: none;
     text-align: center;
     padding: 20px;
