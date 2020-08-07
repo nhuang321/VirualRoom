@@ -80,7 +80,6 @@ server.listen(5000, function() {
 var players = {};
 io.on('connection', function(socket) {
   socket.on('new player', async function(webex) {
-    console.log('new player')
     try {
       await db.collection('users').updateOne({ 'webex': webex }, { $set: { 'socket_id': socket.id }});
 
@@ -88,7 +87,6 @@ io.on('connection', function(socket) {
         x: 300,
         y: 300
       };
-
     } catch (e) {
       console.log('error in new player creation', e)
     }
@@ -112,7 +110,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', () => {
-    console.log('disconnected')
+    delete players[socket.id]
   });
 
 });
