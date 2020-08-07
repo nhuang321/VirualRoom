@@ -184,9 +184,9 @@ function drawRoundRect(ctx, x, y, width, height, rounded) {
 function drawJoinButton(ctx, OUN, x, y, w, h) {
   ctx.fillStyle = 'green';
   drawRoundRect(ctx, x, y, w, h, 5);
-  ctx.fillStyle = 'black'
-  ctx.font = `${h*.85}px serif`
-  ctx.fillText("JOIN" + OUN, x + 2, y + .75*h);
+  ctx.fillStyle = 'white'
+  ctx.font = `${h*.75}px serif`
+  ctx.fillText("JOIN", x + 2, y + .75*h);
 }
 
 function resetGlobals() {
