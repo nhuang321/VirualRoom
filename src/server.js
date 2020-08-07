@@ -39,11 +39,9 @@ app.get('/', function(request, response) {
 
 app.post('/login', async function(req,res) { 
   var OUN = req.body.OUN; 
-  var webex = req.body.webex
 
   var data = { 
       OUN: OUN, 
-      webex: webex,
       socket_id: -1,
   }
   
