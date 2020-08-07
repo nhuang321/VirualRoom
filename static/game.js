@@ -72,7 +72,6 @@ canvas.addEventListener('click', function(event) {
 
 var context = canvas.getContext('2d');
 socket.on('state', function(players) {
-  console.log('socket.id=', socket.id)
   context.clearRect(0, 0, 800, 600);
   resetGlobals();
   context.fillStyle = 'blue';
