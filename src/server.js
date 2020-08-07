@@ -49,7 +49,6 @@ app.post('/login', async function(req,res) {
   
   try {
     var found = await db.collection('users').findOne({ "OUN": OUN });
-    console.log(found)
     if (!found) {
       db.collection('users').insertOne(data, function(err, collection) { 
         if (err) throw err; 
@@ -74,14 +73,37 @@ server.listen(5000, function() {
 });
 
 
+app.get('/oun', async function(request, response) {
+  try {
+    var socketId = request.body.socketId
+    var found = await db.collection('users').findOne({ "socket_id": socketId})
+    if (found) {
+      res.send(found.OUN)
+    } else {
+      res.send('not found')
+    }
+  } catch (e) {
+    res.send('error: ', e)
+  }
+})
+
+
+
+
+// Fancy socket stuff
 
 var players = {};
 io.on('connection', function(socket) {
+
+  socket.on('getOUN', async function(id){
+    var webexPerson = await db.collection('users').findOne({ "socket_id": id})
+    socket.emit('foundOUN', webexPerson.OUN);
+  });
+
   socket.on('new player', async function(OUN) {
     try {
       var ret = await db.collection('users').updateOne({ 'OUN': OUN }, { $set: { 'socket_id': socket.id }});
-      console.log('oun from emit', OUN)
-      console.log(await db.collection('users').findOne({ "OUN": OUN }));
+
       players[socket.id] = {
         x: 300,
         y: 300

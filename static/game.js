@@ -2,6 +2,16 @@ var socket = io();
 var radius = 80;
 const urlParams = new URLSearchParams(window.location.search);
 const OUN = urlParams.get('OUN');
+const currentAcceptBox = {
+  x: -1,
+  y: -1,
+  width: -1,
+  height: -1
+}
+const closestPlayerInfo = {
+  distance: Number.MAX_SAFE_INTEGER,
+  id: -1,
+}
 var movement = {
   up: false,
   down: false,
@@ -41,17 +51,6 @@ document.addEventListener('keyup', function(event) {
   }
 });
 
-const currentAcceptBox = {
-  x: -1,
-  y: -1,
-  width: -1,
-  height: -1
-}
-
-const closestPlayerInfo = {
-  distance: Number.MAX_SAFE_INTEGER,
-  id: -1,
-}
 
 socket.emit('new player', OUN);
 setInterval(function() {
@@ -63,10 +62,25 @@ var canvas = document.getElementById('canvas');
 canvas.addEventListener('click', function(event) {
   /* if event is within closest dialogue box bounds, fire */
   //fix because margin jazz
-  if ( Math.abs(event.clientX - currentAcceptBox.x) < currentAcceptBox.width &&
-       Math.abs(event.clientY - currentAcceptBox.y) < currentAcceptBox.height) 
+  if ( 0 < event.clientX - currentAcceptBox.x &&  event.clientX - currentAcceptBox.x < currentAcceptBox.width &&
+       0 < event.clientY - currentAcceptBox.y && event.clientY - currentAcceptBox.y < currentAcceptBox.height) 
   {
-    console.log('entered')
+    console.log('CLICKED')
+    var data = { 'socketId': closestPlayerInfo.id}
+    fetch('localhost:5000/oun')
+    .then(data => {
+      console.log('data=', data)
+      return data.json()
+    })
+    .then(res => { 
+      console.log('res=', res)
+    })
+    .catch(error => { console.log('error from fetch', error)})
+
+    // socket.emit('getOUN', closestPlayerInfo.id);
+    // socket.on('foundOUN', function(OUN) {
+    //   window.open("https://llnl.webex.com/join/" + OUN, _blank);
+    // })
   }
 });
 
@@ -82,7 +96,7 @@ socket.on('state', function(players) {
     if ( socket.id == id ) {
       context.fillStyle = 'green';
     } else {
-      context.fillStyle = 'blue';
+      context.fillStyle = "rgb(44, 121, 230)";
     }
 
     context.arc(player.x, player.y, 10, 0, 2 * Math.PI);
@@ -110,12 +124,16 @@ function drawJoinBox(players, closestId, context) {
   if ( closestId === -1 ) {
     return;
   }
-  drawBubble(context, players[closestId].x, players[closestId].y + 10, 100, 100, 25);
-  drawJoinButton(context, players[closestId].x + 5, players[closestId].y + 100-20, 40, 20);
-  currentAcceptBox.x = players[closestId].x + 5;
-  currentAcceptBox.y = players[closestId].y + 100-20
-  currentAcceptBox.width = 40;
-  currentAcceptBox.height = 20;
+  context.beginPath();
+  context.fillStyle = `rgb(0, 0, 180)`
+  context.arc(players[closestId].x, players[closestId].y, 10, 0, 2 * Math.PI);
+  context.fill();
+  drawBubble(context, players[closestId].x, players[closestId].y + 10, 100, 60, 25);
+  drawJoinButton(context, players[closestId].x + 13, players[closestId].y + 100-77, 70, 35);
+  currentAcceptBox.x = players[closestId].x + 13 + 11;
+  currentAcceptBox.y = players[closestId].y + 100-77 + 10 + 3;
+  currentAcceptBox.width = 70;
+  currentAcceptBox.height = 35;
 }
 
 function drawBubble(ctx, x, y, w, h, radius) {
@@ -123,6 +141,7 @@ function drawBubble(ctx, x, y, w, h, radius) {
   var b = y + h;
   ctx.beginPath();
   ctx.strokeStyle="black";
+  ctx.fillStyle = "white";
   ctx.lineWidth="2";
   ctx.moveTo(x+radius, y);
   ctx.lineTo(x+radius/2, y-10);
@@ -135,15 +154,35 @@ function drawBubble(ctx, x, y, w, h, radius) {
   ctx.quadraticCurveTo(x, b, x, b-radius);
   ctx.lineTo(x, y+radius);
   ctx.quadraticCurveTo(x, y, x+radius, y);
+  ctx.fill();
   ctx.stroke();
+}
+
+function drawRoundRect(ctx, x, y, width, height, rounded) {
+  const radiansInCircle = 2 * Math.PI
+  const halfRadians = (2 * Math.PI)/2
+  const quarterRadians = (2 * Math.PI)/4  
+  
+  ctx.beginPath();
+  ctx.strokeStyle = 'green'
+  ctx.arc(rounded + x, rounded + y, rounded, -quarterRadians, halfRadians, true)
+  ctx.lineTo(x, y + height - rounded)
+  ctx.arc(rounded + x, height - rounded + y, rounded, halfRadians, quarterRadians, true)  
+  ctx.lineTo(x + width - rounded, y + height)
+  ctx.arc(x + width - rounded, y + height - rounded, rounded, quarterRadians, 0, true)  
+  ctx.lineTo(x + width, y + rounded)  
+  ctx.arc(x + width - rounded, y + rounded, rounded, 0, -quarterRadians, true)  
+  ctx.lineTo(x + rounded, y)
+  ctx.fill();
+  ctx.stroke(); 
 }
 
 function drawJoinButton(ctx, x, y, w, h) {
   ctx.fillStyle = 'green';
-  ctx.fillRect(x, y, w, h);
+  drawRoundRect(ctx, x, y, w, h, 5);
   ctx.fillStyle = 'white'
-  ctx.font = `${h*.90}px serif`
-  ctx.fillText("JOIN", x, y + .75*h);
+  ctx.font = `${h*.85}px serif`
+  ctx.fillText("JOIN", x + 2, y + .75*h);
 }
 
 function resetGlobals() {
